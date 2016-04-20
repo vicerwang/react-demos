@@ -1,0 +1,38 @@
+{
+  "name": "react-demos",
+  "version": "0.0.1",
+  "description": "A collection of react demo with ES6+.",
+  "scripts": {
+    "start": "webpack-dev-server --devtool source-map --hot --inline --progress --colors"
+  },
+  "keywords": [
+    "react",
+    "demo"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vicerwang/react-demos"
+  },
+  "bugs": {
+    "url": "https://github.com/vicerwang/react-demos/issues"
+  },
+  "homepage": "https://github.com/vicerwang/react-demos",
+  "author": "vic01724@sina.cn",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.3.26",
+    "babel-loader": "^6.2.0",
+    "babel-plugin-add-module-exports": "^0.1.2",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
+    "babel-preset-stage-0": "^6.3.13",
+    "react-hot-loader": "^1.3.0",
+    "webpack": "^1.12.9",
+    "webpack-dev-server": "^1.14.0"
+  },
+  "dependencies": {
+    "react": "^0.14.3",
+    "react-dom": "^0.14.3"
+  }
+}
