@@ -2,8 +2,16 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
 class TodoList extends Component {
+    static defaultProps = {
+        todos: []
+    };
+
+    static propTypes = {
+        todos: React.PropTypes.array
+    };
+
     state = {
-        todos: this.props.todos || [],
+        todos: this.props.todos,
         todo: ''
     };
 
@@ -18,12 +26,11 @@ class TodoList extends Component {
         }
     }
 
-    removeTodo(e) {
-        const todo = e.target.previousElementSibling.textContent;
-        const index = this.state.todos.indexOf(todo);
-        this.state.todos.splice(index, 1);
+    removeTodo(index) {
+        const todos = this.state.todos;
+        todos.splice(index, 1);
         this.setState({
-            todos: this.state.todos
+            todos
         });
     }
 
@@ -37,7 +44,8 @@ class TodoList extends Component {
         const todoItems = this.state.todos.map((todo, index) =>
             <li key={index}>
                 <label>{todo}</label>
-                <button type="button" className="destroy" onClick={::this.removeTodo}></button>
+                <button type="button" className="destroy"
+                    onClick={this.removeTodo.bind(this, index)} />
             </li>
         );
 
@@ -45,7 +53,8 @@ class TodoList extends Component {
             <div className="todoapp">
                 <h1>todos</h1>
                 <form action="javascript" onSubmit={::this.addTodo}>
-                    <input type="text" className="new-todo" placeholder="What needs to be done?" value={this.state.todo} onChange={::this.handleTodoChange} />
+                    <input type="text" className="new-todo" placeholder="What needs to be done?"
+                        value={this.state.todo} onChange={::this.handleTodoChange} />
                 </form>
                 <div className="main">
                     <ul className="todo-list">

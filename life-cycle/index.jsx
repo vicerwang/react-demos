@@ -15,21 +15,28 @@ class APP extends React.Component {
     }
 
     handleToggleDisabled() {
-        this.setState({
-            disabled: !this.state.disabled
-        });
+        if (this.state.exists) {
+            this.setState({
+                disabled: !this.state.disabled
+            });
+        }
     }
 
     render() {
         return (
             <div>
-                { this.state.exists ?
-                    <div>
-                        <LifeCycle disabled={this.state.disabled} />
-                        <button type="button" onClick={::this.handleToggleDisabled}>Toggle Disabled</button>
-                    </div> : null
+                {
+                    this.state.exists ?
+                        <div>
+                            <LifeCycle disabled={this.state.disabled} />
+                        </div> : null
                 }
-                <button type="button" onClick={::this.handleToggleExists}>Toggle Exists</button>
+                <button type="button" onClick={::this.handleToggleDisabled}>
+                    Toggle Disabled
+                </button>
+                <button type="button" onClick={::this.handleToggleExists}>
+                    Toggle Exists
+                </button>
             </div>
         );
     }
@@ -96,7 +103,7 @@ class LifeCycle extends React.Component {
         console.log('render');
 
         return (
-          <div>
+          <div style={{width:200,border:'1px solid #ccc',marginBottom:50}}>
             <input type="text"
                 value={this.state.value}
                 disabled={this.props.disabled}

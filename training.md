@@ -25,7 +25,7 @@ export default ({ handleSearch, placeholder }) => (
 
 这段代码构建了一个我们常用的搜索框组件，可能这段代码的一些语法大家并不认识，那是因为它们是ECMAScript 6甚至ECMAScript 7的一些提案语法，不过暂时不必在意这些细节，我们会发现这种写法，好像就是把html写进了js中一样，但是又和真正的html有一些不一样，事实上准确的说这是一个看起来很像XML的JavaScript语法扩展，就像这个文件的后缀名所表示的jsx。从这里就能看出React开发的一些优势：1.类似于html一样良好的编程体验 2.得益于良好的封装性，让构建，复用以及组合组件的变得更加容易
 
-当然了，浏览器是不认识这种语法的，所以需要事先将它们编译成浏览器能够解析执行的js文件，这个过程其实也类似于我们遍写的java源文件要首先编译成计算机可执行的二进制文件。我们可以看下编译后的代码
+当然了，浏览器是不认识这种语法的，所以需要事先将它们编译成浏览器能够解析执行的js文件，这个过程其实也类似于我们编写写的java源文件要首先编译成计算机可执行的二进制文件。我们可以看下编译后的代码
 
 ``` javascript
 exports.default = function (_ref) {
@@ -185,6 +185,10 @@ ReactDOM.render(
 
 ``` javascript
 class TodoList extends React.Component {
+    static defaultProps = {
+        todos: []
+    };
+    
     render() {
         let todoItems = null;
         if (this.props.todos) {
@@ -224,8 +228,10 @@ ReactDOM.render(
 1. `const`/`let`是ES6新增的声明变量的关键字，作用类似于以前的`var`，区别在于被这两个关键字声明的变量，只在代码块（也就是大块号内生效），这两者的区别在于，前者赋值后不可变。待办
 2. `() => {}`箭头函数是ES6中新增的定义函数的方式，第一个括号内为参数，如果只有一个参数，括号可以省略，箭头后的大括号为函数体，如果只有一行语句，可省略大括号，同时默认返回语句执行后的值，它相比过去函数的优势是，书写更加简单，不改变this指向。
 3. 如果没有`<li key={index}></li>`中`key={index}`，我们会发现控制台出现一个warning：`react.js:18798 Warning: Each child in an array or iterator should have a unique "key" prop. Check the render method of TodoList. See https://fb.me/react-warning-keys for more information.`，这个是由于React为了防止渲染出现问题，要为一组ReactElement的每一个设置唯一标识的key
+4. `static defaultProps = {};`是ES7`Class`静态属性的一个提案，React用它来表示默认的props，默认的props是所有组件对象都具有的属性，所以是组件的静态属性。
+5. `static propTypes = {};`则规定了React组件接受props的类型，如果传入的不对，虽然React组件并不会停止运行，但是会在console中给出相应的warning
 
-### 生成新的待办事项
+### 增加新的待办事项
 以上介绍的还都是首次渲染生成的界面，那么产生交互后的页面该如何渲染呢？这里面先介绍下React渲染原理。
 
 React把用户界面当作简单状态机，不同的状态会渲染出不同的界面，这样就可以轻松让用户界面和数据保持一致。因此我们不再需要手动的操作dom更新界面，而只需要更新组件的状态，那么接下来React就会自动刷新组件的界面，你可能会担心也许我只是改了一个span的文本，但React确要整个刷新组件，会不会带来性能方面的问题，React在底层使用虚拟DOM技术，也就是在内存中生成一个和界面的dom树对应的数据结构，每次状态更新，要重绘界面时，React内部会通过diff dom的算法，来自动进行最小的dom改动。
@@ -235,7 +241,7 @@ React把用户界面当作简单状态机，不同的状态会渲染出不同的
 ``` javascript
 class TodoList extends React.Component {
     state = {
-        todos: this.props.todos || []
+        todos: this.props.todos
     };
 
     render() {
@@ -278,7 +284,7 @@ ReactDOM.render(
 	constructor(props) {
 	    super(props);
 	    this.state = {
-	        todos: this.props.todos || []
+	        todos: this.props.todos
 	    };
 	}
 	```
@@ -289,7 +295,7 @@ ReactDOM.render(
 ``` javascript
 class TodoList extends React.Component {
     state = {
-        todos: this.props.todos || []
+        todos: this.props.todos
     };
 
     addTodo(e) {
@@ -359,12 +365,11 @@ class TodoList extends React.Component {
         }
     }
 
-    removeTodo(e) {
-        const todo = e.target.previousElementSibling.textContent;
-        const index = this.state.todos.indexOf(todo);
-        this.state.todos.splice(index, 1);
+    removeTodo(index) {
+        const todos = this.state.todos;
+        todos.splice(index, 1);
         this.setState({
-            todos: this.state.todos
+            todos
         });
     }
 
@@ -372,7 +377,7 @@ class TodoList extends React.Component {
         const todoItems = this.state.todos.map((todo, index) =>
             <li key={index}>
                 <label>{todo}</label>
-                <button type="button" className="destroy" onClick={::this.removeTodo}></button>
+                <button type="button" className="destroy" onClick={this.removeTodo.bind(this, index)}></button>
             </li>
         );
 
@@ -415,12 +420,11 @@ class TodoList extends React.Component {
         }
     }
 
-    removeTodo(e) {
-        const todo = e.target.previousElementSibling.textContent;
-        const index = this.state.todos.indexOf(todo);
-        this.state.todos.splice(index, 1);
+    removeTodo(index) {
+        const todos = this.state.todos;
+        todos.splice(index, 1);
         this.setState({
-            todos: this.state.todos
+            todos
         });
     }
 
@@ -434,7 +438,7 @@ class TodoList extends React.Component {
         const todoItems = this.state.todos.map((todo, index) =>
             <li key={index}>
                 <label>{todo}</label>
-                <button type="button" className="destroy" onClick={::this.removeTodo}></button>
+                <button type="button" className="destroy" onClick={this.removeTodo.bind(this, index)}></button>
             </li>
         );
 
@@ -477,6 +481,10 @@ ReactDOM.render(
 
 ## React组件的生命周期
 ``` javascript
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+
+
 class APP extends React.Component {
     state = {
         exists: true,
@@ -490,21 +498,28 @@ class APP extends React.Component {
     }
 
     handleToggleDisabled() {
-        this.setState({
-            disabled: !this.state.disabled
-        });
+        if (this.state.exists) {
+            this.setState({
+                disabled: !this.state.disabled
+            });
+        }
     }
 
     render() {
         return (
             <div>
-                { this.state.exists ?
-                    <div>
-                        <LifeCycle disabled={this.state.disabled} />
-                        <button type="button" onClick={::this.handleToggleDisabled}>Toggle Disabled</button>
-                    </div> : null
+                {
+                    this.state.exists ?
+                        <div>
+                            <LifeCycle disabled={this.state.disabled} />
+                        </div> : null
                 }
-                <button type="button" onClick={::this.handleToggleExists}>Toggle Exists</button>
+                <button type="button" onClick={::this.handleToggleDisabled}>
+                    Toggle Disabled
+                </button>
+                <button type="button" onClick={::this.handleToggleExists}>
+                    Toggle Exists
+                </button>
             </div>
         );
     }
@@ -512,7 +527,7 @@ class APP extends React.Component {
 
 class LifeCycle extends React.Component {
     static defaultProps = {
-        value: 'some',
+        value: 'input some',
         disabled: false
     };
 
@@ -571,7 +586,7 @@ class LifeCycle extends React.Component {
         console.log('render');
 
         return (
-          <div>
+          <div style={{width:200,border:'1px solid #ccc',marginBottom:50}}>
             <input type="text"
                 value={this.state.value}
                 disabled={this.props.disabled}
